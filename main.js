@@ -44,11 +44,7 @@ client.on("message", (message) => {
 				message.channel.send("What the fuck, I am not connected to any voice channel.\n"
 						+ "Leave me the fuck alone you piece of shit.");
 		} else {
-<<<<<<< HEAD
-			if ( args[1].toLowerCase() !== "help" ) {
-=======
 			if ( args[1].toLowerCase() !== "help" )
->>>>>>> code cleaning / commeting + bot prefix is now a constant
 				message.channel.send("I don't speak idiot you useless cunt.\n"
 						+ "Please learn to use these commands you fucking savage monkey.");
 			message.channel.send(helpCommand);
