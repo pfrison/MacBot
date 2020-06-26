@@ -12,11 +12,7 @@ client.on("ready", () => {
   	console.log("Aye aye commander, I'm in.");
 });
 
-<<<<<<< HEAD
-client.on("message", message => {
-=======
 client.on("message", (message) => {
->>>>>>> code cleaning / commeting + bot prefix is now a constant
 	if ( !message.content )
 		return;
 	const args = message.content.split(" ");
