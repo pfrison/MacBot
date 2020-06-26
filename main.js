@@ -61,7 +61,7 @@ function connectToVoiceChannel( channel ) {
 		channel.join()
 				.then((connection) => {
 					voiceConnection = connection;
-					console.log("I"m in the voice channel. Scanning in progress.");
+					console.log("I'm in the voice channel. Scanning in progress.");
 				})
 				.catch((e) => { console.error(e); });
 	} else
@@ -82,4 +82,4 @@ process.on("SIGINT", function() {
 });
 
 // Leave this at the end. If you don't leave his at the end of the code I will track you down and use your face to clean my windows. 
-client.login("NzI0NzU1MTI0MjIzNzM3ODc2.XvPuhw.kP0WGBMO6hp4LhglbuJIJfFIWEU");
+client.login('NzI0NzU1MTI0MjIzNzM3ODc2.XvPuhw.kP0WGBMO6hp4LhglbuJIJfFIWEU');
