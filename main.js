@@ -1,6 +1,11 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
+// The token is obviously in another file (which will not be push into github thanks to .gitignore)
+// Please create a file "token.js" next to this file and enter the following code in it :
+// module.exports = Object.freeze({TOKEN: <the token in a string>});
+const token = require("./token").TOKEN;
+
 const botPrefix = "macpop"; // in fucking lower case you fucking monkey
 const helpCommand = "Command list :\n"
 		+ "\"" + botPrefix + " come\" : send the bot to your voice channel.\n"
@@ -30,7 +35,7 @@ client.on("message", (message) => {
 				if ( message.member.voice.channel )
 					connectToVoiceChannel( message.member.voice.channel );
 				else
-					message.channel.send("Your not connected to any voice channel dumbass.\n"
+					message.channel.send("You're not connected to any voice channel dumbass.\n"
 							+ "You are fucking stupid and I hate you.");
 			}, wait);
 		} else if ( args[1].toLowerCase() === "leave" ) {
@@ -42,7 +47,7 @@ client.on("message", (message) => {
 		} else {
 			if ( args[1].toLowerCase() !== "help" )
 				message.channel.send("I don't speak idiot you useless cunt.\n"
-						+ "Please learn to use these commands you fucking savage monkey.");
+						+ "Please learn to use my commands you fucking savage monkey.");
 			message.channel.send(helpCommand);
 		}
 	}
@@ -82,4 +87,4 @@ process.on("SIGINT", function() {
 });
 
 // Leave this at the end. If you don't leave his at the end of the code I will track you down and use your face to clean my windows. 
-client.login('NzI0NzU1MTI0MjIzNzM3ODc2.XvPuhw.kP0WGBMO6hp4LhglbuJIJfFIWEU');
+client.login(token);
