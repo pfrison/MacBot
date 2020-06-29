@@ -18,7 +18,7 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
-	if ( !message.content )
+	if ( !message.content || message.author.bot )
 		return;
 	const args = message.content.split(" ");
 	
@@ -49,6 +49,14 @@ client.on("message", (message) => {
 				message.channel.send("I don't speak idiot you useless cunt.\n"
 						+ "Please learn to use my commands you fucking savage monkey.");
 			message.channel.send(helpCommand);
+		}
+	}
+	
+	// <word>-tine to pain au <word>-t translation
+	for (let i=0; i<args.length; i++) {
+		if ( args[i].includes("tine") && args[i].length >= 5 ) {
+			let painAu = args[i].substring(0, args[i].length - 3);
+			message.channel.send("On ne dit pas \"" + args[i] + "\" mais \"pain au " + painAu + "\" !");
 		}
 	}
 });
