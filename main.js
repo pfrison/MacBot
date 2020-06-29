@@ -52,9 +52,9 @@ client.on("message", (message) => {
 		}
 	}
 	
-	// <word>-tine to pain au <word>-t translation
+	// <word>-ine to pain au <word> translation
 	for (let i=0; i<args.length; i++) {
-		if ( args[i].includes("tine") && args[i].length >= 5 ) {
+		if ( args[i].includes("ine") && args[i].length >= 4 ) {
 			let painAu = args[i].substring(0, args[i].length - 3);
 			message.channel.send("On ne dit pas \"" + args[i] + "\" mais \"pain au " + painAu + "\" !");
 		}
