@@ -54,7 +54,7 @@ client.on("message", (message) => {
 	
 	// <word>-ine to pain au <word> translation
 	for (let i=0; i<args.length; i++) {
-		if ( args[i].includes("ine") && args[i].length >= 4 ) {
+		if ( args[i].length >= 4 && args[i].substring( args[i].length - 3, args[i].length ) === "ine" ) {
 			let painAu = args[i].substring(0, args[i].length - 3);
 			message.channel.send("On ne dit pas \"" + args[i] + "\" mais \"pain au " + painAu + "\" !");
 		}
