@@ -22,8 +22,11 @@ client.on("message", (message) => {
 		return;
 	const args = message.content.split(" ");
 	
+	let noBruh = false;
+	
 	// command handler. DO NOT FUCKING FORGET THE LOWER CASE
 	if ( args[0].toLowerCase() === botPrefix ) {
+		noBruh = true;
 		if ( args[1].toLowerCase() === "come" ) {
 			let wait = 0;
 			if ( voiceConnection ) {
@@ -57,8 +60,13 @@ client.on("message", (message) => {
 		if ( args[i].length >= 4 && args[i].substring( args[i].length - 3, args[i].length ) === "ine" ) {
 			let painAu = args[i].substring(0, args[i].length - 3);
 			message.channel.send("On ne dit pas \"" + args[i] + "\" mais \"pain au " + painAu + "\" !");
+			noBruh = true;
 		}
 	}
+	
+	// 1/50 chance to say "bruh"
+	if ( !noBruh && Math.random() < 0.02 )
+		message.channel.send("bruh");
 });
 
 // Detect when a member speaking status change (talking / not talking)
