@@ -21,13 +21,16 @@ client.on("message", (message) => {
 	if ( !message.content || message.author.bot )
 		return;
 	const args = message.content.split(" ");
+	for (let i=0; i<args.lenght; i++) {
+		args[i] = args[i].toLowerCase();
+	}
 	
 	let noBruh = false;
 	
 	// command handler. DO NOT FUCKING FORGET THE LOWER CASE
-	if ( args[0].toLowerCase() === botPrefix ) {
+	if ( args[0] === botPrefix ) {
 		noBruh = true;
-		if ( args[1].toLowerCase() === "come" ) {
+		if ( args[1] === "come" ) {
 			let wait = 0;
 			if ( voiceConnection ) {
 				disconnectFormCurrentVoiceChannel();
@@ -41,14 +44,14 @@ client.on("message", (message) => {
 					message.channel.send("You're not connected to any voice channel dumbass.\n"
 							+ "You are fucking stupid and I hate you.");
 			}, wait);
-		} else if ( args[1].toLowerCase() === "leave" ) {
+		} else if ( args[1] === "leave" ) {
 			if ( voiceConnection )
 				disconnectFormCurrentVoiceChannel();
 			else
 				message.channel.send("What the fuck, I am not connected to any voice channel.\n"
 						+ "Leave me the fuck alone you piece of shit.");
 		} else {
-			if ( args[1].toLowerCase() !== "help" )
+			if ( args[1] !== "help" )
 				message.channel.send("I don't speak idiot you useless cunt.\n"
 						+ "Please learn to use my commands you fucking savage monkey.");
 			message.channel.send(helpCommand);
