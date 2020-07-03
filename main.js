@@ -21,9 +21,8 @@ client.on("message", (message) => {
 	if ( !message.content || message.author.bot )
 		return;
 	const args = message.content.split(" ");
-	for (let i=0; i<args.lenght; i++) {
+	for (let i=0; i<args.length; i++)
 		args[i] = args[i].toLowerCase();
-	}
 	
 	let noBruh = false;
 	
