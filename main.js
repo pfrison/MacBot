@@ -1,75 +1,21 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
+// our libs
+const commandHandler = require("./commandHandler");
+const voiceChannelHandler = require("./voiceChannelHandler");
+
 // The token is obviously in another file (which will not be push into github thanks to .gitignore)
 // Please create a file "token.js" next to this file and enter the following code in it :
 // module.exports = Object.freeze({TOKEN: <the token in a string>});
 const token = require("./token").TOKEN;
 
-const botPrefix = "macpop"; // in fucking lower case you fucking monkey
-const helpCommand = "Command list :\n"
-		+ "\"" + botPrefix + " come\" : send the bot to your voice channel.\n"
-		+ "\"" + botPrefix + " leave\" : tell the bot to leave the voice channel.";
-
-var voiceConnection; // used to keep track of voice connection
-
 client.on("ready", () => {
   	console.log("Aye aye commander, I'm in.");
 });
 
-client.on("message", (message) => {
-	if ( !message.content || message.author.bot )
-		return;
-	const args = message.content.split(" ");
-	for (let i=0; i<args.length; i++)
-		args[i] = args[i].toLowerCase();
-	
-	let noBruh = false;
-	
-	// command handler. DO NOT FUCKING FORGET THE LOWER CASE
-	if ( args[0] === botPrefix ) {
-		noBruh = true;
-		if ( args[1] === "come" ) {
-			let wait = 0;
-			if ( voiceConnection ) {
-				disconnectFormCurrentVoiceChannel();
-				wait = 1000;
-			}
-			
-			setTimeout(() => {
-				if ( message.member.voice.channel )
-					connectToVoiceChannel( message.member.voice.channel );
-				else
-					message.channel.send("You're not connected to any voice channel dumbass.\n"
-							+ "You are fucking stupid and I hate you.");
-			}, wait);
-		} else if ( args[1] === "leave" ) {
-			if ( voiceConnection )
-				disconnectFormCurrentVoiceChannel();
-			else
-				message.channel.send("What the fuck, I am not connected to any voice channel.\n"
-						+ "Leave me the fuck alone you piece of shit.");
-		} else {
-			if ( args[1] !== "help" )
-				message.channel.send("I don't speak idiot you useless cunt.\n"
-						+ "Please learn to use my commands you fucking savage monkey.");
-			message.channel.send(helpCommand);
-		}
-	}
-	
-	// <word>-ine to pain au <word> translation
-	for (let i=0; i<args.length; i++) {
-		if ( args[i].length >= 4 && args[i].substring( args[i].length - 3, args[i].length ) === "ine" ) {
-			let painAu = args[i].substring(0, args[i].length - 3);
-			message.channel.send("On ne dit pas \"" + args[i] + "\" mais \"pain au " + painAu + "\" !");
-			noBruh = true;
-		}
-	}
-	
-	// 1/50 chance to say "bruh"
-	if ( !noBruh && Math.random() < 0.02 )
-		message.channel.send("bruh");
-});
+// message in chat
+client.on("message", commandHandler.onMessage);
 
 // Detect when a member speaking status change (talking / not talking)
 client.on("guildMemberSpeaking", (member, speakingStatus) => {
@@ -79,30 +25,15 @@ client.on("guildMemberSpeaking", (member, speakingStatus) => {
 	}
 });
 
-function connectToVoiceChannel( channel ) {
-	if (channel != null) {
-		channel.join()
-				.then((connection) => {
-					voiceConnection = connection;
-					console.log("I'm in the voice channel. Scanning in progress.");
-				})
-				.catch((e) => { console.error(e); });
-	} else
-		console.error("Cannot get in the voice channel.");
-}
-function disconnectFormCurrentVoiceChannel() {
-	voiceConnection.disconnect();
-	voiceConnection = undefined;
-}
-
 // PLEASE use this function to restore the bot state before you end the code LIKE A FUCKING SAVAGE WITH CRTL+C YOU FUCKING MONKEY
-process.on("SIGINT", function() {
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
+function gracefulShutdown() {
     console.log("Caught interrupt signal captain ! Preparing to leave now.");
-	if ( voiceConnection )
-		disconnectFormCurrentVoiceChannel();
+	voiceChannelHandler.disconnectFormCurrentVoiceChannel();
     console.log("Everything ended like planned. Good bye commander.");
     process.exit();
-});
+};
 
 // Leave this at the end. If you don't leave his at the end of the code I will track you down and use your face to clean my windows. 
 client.login(token);
