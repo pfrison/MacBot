@@ -2,6 +2,13 @@ const http = require("http");
 const https = require("https");
 
 function requestJSON( options, objects, onResult, onError ) {
+    requestText(options, objects, (statusCode, output, objects) => {
+        let json = JSON.parse(output);
+        onResult(statusCode, json, objects);
+    }, onError);
+}
+
+function requestText( options, objects, onResult, onError ) {
     const port = options.port == 443 ? https : http;
     let output = "";
     
@@ -13,12 +20,8 @@ function requestJSON( options, objects, onResult, onError ) {
         });
     
         res.on('end', () => {
-            try {
-                let json = JSON.parse(output);
-                onResult(res.statusCode, json, objects);
-            } catch (err) {
-                onError(objects, err);
-            }
+            try { onResult(res.statusCode, output, objects); }
+            catch (err) { console.log(err); onError(objects, err); }
         });
     });
     
@@ -29,3 +32,4 @@ function requestJSON( options, objects, onResult, onError ) {
 
 
 exports.requestJSON = requestJSON;
+exports.requestText = requestText;

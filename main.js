@@ -4,6 +4,7 @@ const client = new Discord.Client();
 // our libs
 const commandHandler = require("./commandHandler");
 const voiceChannelHandler = require("./voiceChannelHandler");
+const screenShot = require("./screenShot");
 
 // The token is obviously in another file (which will not be push into github thanks to .gitignore)
 // Please create a file "token.js" next to this file and enter the following code in it :
@@ -31,6 +32,7 @@ process.on("SIGTERM", gracefulShutdown);
 function gracefulShutdown() {
     console.log("Caught interrupt signal captain ! Preparing to leave now.");
 	voiceChannelHandler.disconnectFormCurrentVoiceChannel();
+	screenShot.clean();
     console.log("Everything ended like planned. Good bye commander.");
     process.exit();
 };

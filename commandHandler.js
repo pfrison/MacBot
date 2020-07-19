@@ -1,5 +1,7 @@
 const voiceChannelHandler = require("./voiceChannelHandler");
 const e621 = require("./e621");
+const phub = require("./phub");
+const screenShot = require("./screenShot");
 
 const BRUH_CHANCE = 1/50;
 const NO_CHANCE = 1/10;
@@ -8,7 +10,9 @@ const botPrefix = "macpop"; // in fucking lower case you fucking monkey
 const helpCommand = "Command list :\n"
         + "\"" + botPrefix + " come\" : send the bot to your voice channel.\n"
         + "\"" + botPrefix + " leave\" : tell the bot to leave the voice channel.\n"
-        + "\"" + botPrefix + " e621 [optional tags]\" : fetch a random image from e621.net, with or without tags.\n";
+        + "\"" + botPrefix + " e621 [optional tags]\" : fetch a random image from e621, with or without tags.\n"
+        + "\"" + botPrefix + " phub [optional tags]\" : fetch a random video from phub, with or without tags.\n"
+        + "\"" + botPrefix + " screenshot\" : take a screenshot of the admin desktop and send it.\n";
         
 function onMessage( message ) {
     if ( !message.content || message.author.bot )
@@ -48,6 +52,19 @@ function onMessage( message ) {
                     tags += args[i] + "+";
                 e621.randomE621(message.channel, tags);
             }
+        } else if ( args[1] === "phub" ) {
+            if (args.length <= 2)
+                phub.randomPHub(message.channel);
+            else {
+                let tags = "";
+                for (let i=2; i<args.length; i++)
+                    tags += args[i] + "+";
+                phub.randomPHub(message.channel, tags);
+            }
+        } else if ( args[1] === "screenshot" ) {
+            screenShot.takeScreenShot((imagePath) => {
+                message.channel.send( {files: [imagePath]} );
+            });
         } else {
             if ( args[1] !== "help" )
                 message.channel.send("I don't speak idiot you useless cunt.\n"
