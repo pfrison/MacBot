@@ -1,4 +1,7 @@
+const fs = require("fs");
+
 var voiceConnection; // used to keep track of voice connection
+var soundStream; // used to keep track of the sound played
 
 function connectToVoiceChannel( channel ) {
     // disconnect from previous channel
@@ -33,5 +36,35 @@ function disconnectFormCurrentVoiceChannel() {
     return connectedBefore;
 }
 
+function isConnected() {
+    if ( voiceConnection )
+        return true;
+    else
+        return false;
+}
+
+function playSound(filePath, callback) {
+    if ( voiceConnection && fs.existsSync(filePath) ) {
+        soundStream = voiceConnection.play(filePath)
+        soundStream.on("end", () => {
+            soundStream = undefined;
+            callback();
+        });
+        return true;
+    } else
+        return false;
+}
+
+function stopSound() {
+    if ( soundStream ) {
+        soundStream.pause()
+        return true;
+    } else
+        return false;
+}
+
 exports.connectToVoiceChannel = connectToVoiceChannel;
 exports.disconnectFormCurrentVoiceChannel = disconnectFormCurrentVoiceChannel;
+exports.isConnected = isConnected;
+exports.playSound = playSound;
+exports.stopSound = stopSound;

@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>MacBot soundboard</title>
+    </head>
+    <body>
+        <h1>MacBot soundboard</h1>
+        <h2>Play a sound</h2>
+        <p>
+            <a href="/soundBoard?tg=1">Stop current sound</a> <br>
+            <a href="/soundBoard">Refresh list</a> <br>
+            <ul id="soundList"></ul>
+        </p>
+        <h2>Upload a sound</h2>
+        <form ref="uploadForm"
+                id="uploadForm"
+                action="/soundBoard"
+                method="post"
+                encType="multipart/form-data">
+            <label for="soundName">Sound name : </label> <br>
+            <input type="text" placeholder="miaou.mp3" name="soundName" required> <br>
+            <label for="soundFile">Sound file : </label> <br>
+            <input type="file" name="soundFile" required> <br> <br>
+            <input type="submit" value="upload">
+		</form>
+    </body>
+</html>

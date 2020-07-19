@@ -8,7 +8,8 @@ function takeScreenShot(callback) {
 }
 
 function clean() {
-    fs.unlinkSync(location);
+    if (fs.existsSync(location))
+        fs.unlinkSync(location);
 }
 
 exports.takeScreenShot = takeScreenShot;

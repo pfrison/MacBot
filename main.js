@@ -5,6 +5,7 @@ const client = new Discord.Client();
 const commandHandler = require("./commandHandler");
 const voiceChannelHandler = require("./voiceChannelHandler");
 const screenShot = require("./screenShot");
+const soundBoard = require("./soundBoard");
 
 // The token is obviously in another file (which will not be push into github thanks to .gitignore)
 // Please create a file "token.js" next to this file and enter the following code in it :
@@ -36,6 +37,9 @@ function gracefulShutdown() {
     console.log("Everything ended like planned. Good bye commander.");
     process.exit();
 };
+
+// launch soundBoard web server
+soundBoard.initSoundBoard(8081);
 
 // Leave this at the end. If you don't leave his at the end of the code I will track you down and use your face to clean my windows. 
 client.login(token);
