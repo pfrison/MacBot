@@ -2,19 +2,23 @@ const voiceChannelHandler = require("./voiceChannelHandler");
 const e621 = require("./e621");
 const phub = require("./phub");
 const screenShot = require("./screenShot");
+const truthOrDare = require("./truthOrDare");
 
 const BRUH_CHANCE = 1/50;
 const NO_CHANCE = 1/20;
 
 const botPrefix = "macpop"; // in fucking lower case you fucking monkey
 const helpCommand = "Command list :\n"
+        + "\"" + botPrefix + " clean\" : reset the bot.\n"
         + "\"" + botPrefix + " come\" : send the bot to your voice channel.\n"
         + "\"" + botPrefix + " leave\" : tell the bot to leave the voice channel.\n"
         + "\"" + botPrefix + " e621 [optional tags]\" : fetch a random image from e621, with or without tags.\n"
         + "\"" + botPrefix + " phub [optional tags]\" : fetch a random video from phub, with or without tags.\n"
         + "\"" + botPrefix + " screenshot\" : take a screenshot of the admin desktop and send it.\n"
         + "\"" + botPrefix + " soundboard [optional music]\" : give a link to the soundboard web server or play an uploaded music if provided in argument.\n"
-        + "\"" + botPrefix + " tg\" : stop all song immediately.\n";
+        + "\"" + botPrefix + " tg\" : stop all song immediately.\n"
+        + "\"" + botPrefix + " truth\" : get a random truth question on getDare.\n"
+        + "\"" + botPrefix + " dare\" : get a random dare on getDare.\n";
         
 function onMessage( message ) {
     if ( !message.content || message.author.bot )
@@ -34,7 +38,11 @@ function onMessage( message ) {
         }
 
         noBruh = true;
-        if ( args[1] === "come" ) {
+        if ( args[1] === "clean" ) {
+            voiceChannelHandler.disconnectFormCurrentVoiceChannel();
+            screenShot.clean();
+            message.channel.send("Here you go I'm clean again ! (Not like you, take a shower now)");
+        } else if ( args[1] === "come" ) {
             if ( message.member.voice.channel )
                 voiceChannelHandler.connectToVoiceChannel( message.member.voice.channel );
             else
@@ -91,7 +99,11 @@ function onMessage( message ) {
             if ( !correct )
                 message.channel.send("Oh my god shut the fuck up I wasn't playing any sound.\n"
                         + "I'm tired of you all and your useless organic brains !");
-        } else {
+        } else if ( args[1] === "truth" )
+            truthOrDare.randomTruth(message.channel);
+        else if ( args[1] === "dare" )
+            truthOrDare.randomDare(message.channel);
+        else {
             if ( args[1] !== "help" )
                 message.channel.send("I don't speak idiot you useless cunt.\n"
                         + "Please learn to use my commands you fucking savage monkey.");

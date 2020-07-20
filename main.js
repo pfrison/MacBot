@@ -21,10 +21,10 @@ client.on("message", commandHandler.onMessage);
 
 // Detect when a member speaking status change (talking / not talking)
 client.on("guildMemberSpeaking", (member, speakingStatus) => {
-	if ( member && speakingStatus ) {
+	/*if ( member && speakingStatus ) {
 		const user = member.user;
 		console.log("Speaking event (" + speakingStatus + ") : " + user.username);
-	}
+	}*/
 });
 
 // PLEASE use this function to restore the bot state before you end the code LIKE A FUCKING SAVAGE WITH CRTL+C YOU FUCKING MONKEY

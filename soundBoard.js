@@ -8,7 +8,7 @@ const fs = require("fs");
 
 const voiceChannelHandler = require("./voiceChannelHandler");
 
-const SIZE_LIMIT = 5242880; // 5 MB = 5 * 1024 * 1024
+const SIZE_LIMIT = 20971520; // 20 MB = 20 * 1024 * 1024
 
 function initSoundBoard(port) {
     app.use(fileUpload());
@@ -76,7 +76,7 @@ function uploadSound(file, name, callback) {
     if (name.indexOf('\0') !== -1) // check for null bytes
         throw "Null byte detected in file name. Are you trying to break my thing ?";
     if (file.size > SIZE_LIMIT)
-        throw "File is too large (must be < 5 MB).";
+        throw "File is too large (must be < 20 MB).";
 
     for (let i=0; i<name.length; i++) {
         if ( (name.charCodeAt(i) >= 97 && name.charCodeAt(i) <= 122) // [a-z]
@@ -91,6 +91,8 @@ function uploadSound(file, name, callback) {
 
     if ( !name )
         throw "Unvalid name provided.";
+    if ( name.length > 100 )
+        throw "Sound name is too long.";
     if ( fs.existsSync("./sounds/" + name) )
         throw "A file with that name already exist (" + name + ").";
 
