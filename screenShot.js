@@ -3,8 +3,13 @@ const fs = require("fs");
 
 const location = "./tmp/screenShot.png";
 
-function takeScreenShot(callback) {
-    screenshot({ filename: location }).then(callback);
+function takeScreenShot(chatChannel) {
+    screenshot({ filename: location }).then((imagePath) => {
+        chatChannel.send( {files: [imagePath]} ).then(() => {
+            if (fs.existsSync(imagePath))
+                fs.unlinkSync(imagePath);
+        });
+    });
 }
 
 function clean() {

@@ -72,9 +72,7 @@ function onMessage( message ) {
                 phub.randomPHub(message.channel, tags);
             }
         } else if ( args[1] === "screenshot" ) {
-            screenShot.takeScreenShot((imagePath) => {
-                message.channel.send( {files: [imagePath]} );
-            });
+            screenShot.takeScreenShot(message.channel);
         } else if ( args[1] === "soundboard" ) {
             if ( args.length <= 2 ) {
                 message.channel.send("Here is the link to access to the soundboard web server lovely human friend ♥~ :\n"

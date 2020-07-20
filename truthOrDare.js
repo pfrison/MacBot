@@ -19,8 +19,8 @@ function makeRequest(chatChannel, rtord) {
     let post_data = querystring.stringify({
         "rtord" : rtord,
         "rating" : 1,
-        "inclusion" : 1,
-        "set" : 0
+        "inclusion" : 0,
+        "set" : 2
     });
 
     let options = {
