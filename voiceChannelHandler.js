@@ -45,7 +45,7 @@ function isConnected() {
 
 function playSound(filePath, callback) {
     if ( voiceConnection && fs.existsSync(filePath) ) {
-        soundStream = voiceConnection.play(filePath)
+        soundStream = voiceConnection.play(filePath, { volume: 0.3 });
         soundStream.on("end", () => {
             soundStream = undefined;
             callback();

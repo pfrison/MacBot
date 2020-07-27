@@ -1,5 +1,7 @@
 const HTTPClient = require("./HTTPClient");
 
+const maxSize = 2 * 1024 * 1024; // 2 Mo
+
 function randomE621( chatChannel, tags ) {
     let options = {
         host: "e621.net",
@@ -29,12 +31,20 @@ function onResult( resultCode, json, objects ) {
     else if ( resultCode !== 200) 
         onError( objects );
     else {
-        if ( !json || !json.post.file.url ) {
+        if ( !json || !json.post.id || !json.post.sample.url || !json.post.file.url
+                    || !json.post.file.size || !json.post.file.ext ) {
             onError( objects );
             return;
         }
 
-        objects.chatChannel.send( {files: [json.post.file.url]} );
+        if ( json.post.file.ext === "swf" )
+            objects.chatChannel.send("This is flash content click here to play it : https://e621.net/posts/" + json.post.id );
+        else if ( parseInt(json.post.file.size) > maxSize )
+            objects.chatChannel.send("File size is too large only a preview is shown. Post id : " + json.post.id,
+                    {files: [json.post.sample.url]} );
+        else 
+            objects.chatChannel.send( "Post id : " + json.post.id,
+                    {files: [json.post.file.url]} );
     }
 }
 

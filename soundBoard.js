@@ -1,7 +1,3 @@
-const express = require("express")
-const app = express()
-const fileUpload = require('express-fileupload');
-const bodyParser = require('body-parser');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const fs = require("fs");
@@ -10,10 +6,8 @@ const voiceChannelHandler = require("./voiceChannelHandler");
 
 const SIZE_LIMIT = 20971520; // 20 MB = 20 * 1024 * 1024
 
-function initSoundBoard(port) {
-    app.use(fileUpload());
-    app.use(bodyParser());
-    app.get('/soundBoard', function (req, res) {
+function initSoundBoard(app) {
+    app.get("/soundBoard", function (req, res) {
         let foot;
         try {
             if (req.query.tg === "1")
@@ -26,7 +20,7 @@ function initSoundBoard(port) {
 
         sendPage(res, foot);
     });
-    app.post('/soundBoard', function (req, res) {
+    app.post("/soundBoard", function (req, res) {
         try {
             if (req.files && req.files.soundFile && req.body.soundName) {
                 uploadSound(req.files.soundFile, req.body.soundName, (name, err) => {
@@ -43,8 +37,6 @@ function initSoundBoard(port) {
             sendPage(res, "<p style='color: red;'>An error occured : " + err + "</p>");
         }
     });
-    
-    app.listen(port);
 }
 
 function sendPage(res, foot) {
@@ -73,7 +65,7 @@ function onSoundCommand(sound) {
 }
 
 function uploadSound(file, name, callback) {
-    if (name.indexOf('\0') !== -1) // check for null bytes
+    if (name.indexOf("\0") !== -1) // check for null bytes
         throw "Null byte detected in file name. Are you trying to break my thing ?";
     if (file.size > SIZE_LIMIT)
         throw "File is too large (must be < 20 MB).";

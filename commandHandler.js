@@ -3,6 +3,9 @@ const e621 = require("./e621");
 const phub = require("./phub");
 const screenShot = require("./screenShot");
 const truthOrDare = require("./truthOrDare");
+const remoteControl = require("./remoteControl");
+const members = require("./members");
+const channels = require("./channels");
 
 const BRUH_CHANCE = 1/50;
 const NO_CHANCE = 1/20;
@@ -41,6 +44,9 @@ function onMessage( message ) {
         if ( args[1] === "clean" ) {
             voiceChannelHandler.disconnectFormCurrentVoiceChannel();
             screenShot.clean();
+            remoteControl.clean(false);
+            members.refreshMembers();
+            channels.refreshChannels();
             message.channel.send("Here you go I'm clean again ! (Not like you, take a shower now)");
         } else if ( args[1] === "come" ) {
             if ( message.member.voice.channel )
@@ -54,6 +60,21 @@ function onMessage( message ) {
                 message.channel.send("What the fuck, I am not connected to any voice channel.\n"
                         + "Leave me the fuck alone you piece of shit.");
         } else if ( args[1] === "e621" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
+            // if fav:Yoyorony is used as tag
+            for (let i=2; i<args.length; i++) {
+                if (args[i].toLowerCase() === "fav:yoyorony") {
+                    if ( message.author.username !== "Neldof" ) {
+                        message.channel.send("Only Neldof have the gift to use \"fav:Yoyorony\".");
+                        return;
+                    } else
+                        break;
+                }
+            }
             if (args.length <= 2)
                 e621.randomE621(message.channel);
             else {
@@ -63,6 +84,11 @@ function onMessage( message ) {
                 e621.randomE621(message.channel, tags);
             }
         } else if ( args[1] === "phub" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
             if (args.length <= 2)
                 phub.randomPHub(message.channel);
             else {
@@ -97,11 +123,21 @@ function onMessage( message ) {
             if ( !correct )
                 message.channel.send("Oh my god shut the fuck up I wasn't playing any sound.\n"
                         + "I'm tired of you all and your useless organic brains !");
-        } else if ( args[1] === "truth" )
+        } else if ( args[1] === "truth" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
             truthOrDare.randomTruth(message.channel);
-        else if ( args[1] === "dare" )
+        } else if ( args[1] === "dare" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
             truthOrDare.randomDare(message.channel);
-        else {
+        } else {
             if ( args[1] !== "help" )
                 message.channel.send("I don't speak idiot you useless cunt.\n"
                         + "Please learn to use my commands you fucking savage monkey.");
