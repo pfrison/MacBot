@@ -16,12 +16,15 @@ const helpCommand = "Command list :\n"
         + "\"" + botPrefix + " come\" : send the bot to your voice channel.\n"
         + "\"" + botPrefix + " leave\" : tell the bot to leave the voice channel.\n"
         + "\"" + botPrefix + " e621 [optional tags]\" : fetch a random image from e621, with or without tags.\n"
+        + "\"" + botPrefix + " bestOfE621 [optional tags]\" : fetch a random image from e621 that is considered one of the best image, with or without tags.\n"
+        + "\"" + botPrefix + " worstOfE621 [optional tags]\" : fetch a random image from e621 that is considered one of the worst image, with or without tags.\n"
         + "\"" + botPrefix + " phub [optional tags]\" : fetch a random video from phub, with or without tags.\n"
         + "\"" + botPrefix + " screenshot\" : take a screenshot of the admin desktop and send it.\n"
         + "\"" + botPrefix + " soundboard [optional music]\" : give a link to the soundboard web server or play an uploaded music if provided in argument.\n"
         + "\"" + botPrefix + " tg\" : stop all song immediately.\n"
         + "\"" + botPrefix + " truth\" : get a random truth question on getDare.\n"
-        + "\"" + botPrefix + " dare\" : get a random dare on getDare.\n";
+        + "\"" + botPrefix + " dare\" : get a random dare on getDare.\n"
+        + "\"" + botPrefix + " remote\" : get a random dare on getDare.\n";
         
 function onMessage( message ) {
     if ( !message.content || message.author.bot )
@@ -67,7 +70,7 @@ function onMessage( message ) {
             }
             // if fav:Yoyorony is used as tag
             for (let i=2; i<args.length; i++) {
-                if (args[i].toLowerCase() === "fav:yoyorony") {
+                if ( args[i].toLowerCase().includes("fav:yoyorony") ) {
                     if ( message.author.username !== "Neldof" ) {
                         message.channel.send("Only Neldof have the gift to use \"fav:Yoyorony\".");
                         return;
@@ -82,6 +85,54 @@ function onMessage( message ) {
                 for (let i=2; i<args.length; i++)
                     tags += args[i] + "+";
                 e621.randomE621(message.channel, tags);
+            }
+        } else if ( args[1] === "bestofe621" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
+            // if fav:Yoyorony is used as tag
+            for (let i=2; i<args.length; i++) {
+                if ( args[i].toLowerCase().includes("fav:yoyorony") ) {
+                    if ( message.author.username !== "Neldof" ) {
+                        message.channel.send("Only Neldof have the gift to use \"fav:Yoyorony\". For he is my master OwO");
+                        return;
+                    } else
+                        break;
+                }
+            }
+            if (args.length <= 2)
+                e621.randomBestOfE621(message.channel);
+            else {
+                let tags = "";
+                for (let i=2; i<args.length; i++)
+                    tags += args[i] + "+";
+                e621.randomBestOfE621(message.channel, tags);
+            }
+        } else if ( args[1] === "worstofe621" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
+            // if fav:Yoyorony is used as tag
+            for (let i=2; i<args.length; i++) {
+                if ( args[i].toLowerCase().includes("fav:yoyorony") ) {
+                    if ( message.author.username !== "Neldof" ) {
+                        message.channel.send("Only Neldof have the gift to use \"fav:Yoyorony\". For he is my master OwO");
+                        return;
+                    } else
+                        break;
+                }
+            }
+            if (args.length <= 2)
+                e621.randomWorstOfE621(message.channel);
+            else {
+                let tags = "";
+                for (let i=2; i<args.length; i++)
+                    tags += args[i] + "+";
+                e621.randomWorstOfE621(message.channel, tags);
             }
         } else if ( args[1] === "phub" ) {
             if ( message.channel.name && message.channel.name !== "nsfw" ) {

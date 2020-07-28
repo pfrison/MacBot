@@ -29,7 +29,7 @@ function requestText( options, objects, onResult, onError ) {
     
         res.on('end', () => {
             try { onResult(res.statusCode, output, objects); }
-            catch (err) { console.log(err); onError(objects, err); }
+            catch (err) { console.log(err); onError(objects, "", err); }
         });
     });
     
