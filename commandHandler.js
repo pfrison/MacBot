@@ -6,9 +6,12 @@ const truthOrDare = require("./truthOrDare");
 const remoteControl = require("./remoteControl");
 const members = require("./members");
 const channels = require("./channels");
+const diceDare = require("./diceDare");
 
 const BRUH_CHANCE = 1/50;
 const NO_CHANCE = 1/20;
+
+const MY_IP = "89.158.234.155"
 
 const botPrefix = "macpop"; // in fucking lower case you fucking monkey
 const helpCommand = "Command list :\n"
@@ -24,7 +27,8 @@ const helpCommand = "Command list :\n"
         + "\"" + botPrefix + " tg\" : stop all song immediately.\n"
         + "\"" + botPrefix + " truth\" : get a random truth question on getDare.\n"
         + "\"" + botPrefix + " dare\" : get a random dare on getDare.\n"
-        + "\"" + botPrefix + " remote\" : get a random dare on getDare.\n";
+        + "\"" + botPrefix + " dicedare\" : get a random dice dare and play with the bot.\n"
+        + "\"" + botPrefix + " remote\" : give the url to the remote controler.";
         
 function onMessage( message ) {
     if ( !message.content || message.author.bot )
@@ -153,7 +157,7 @@ function onMessage( message ) {
         } else if ( args[1] === "soundboard" ) {
             if ( args.length <= 2 ) {
                 message.channel.send("Here is the link to access to the soundboard web server lovely human friend ♥~ :\n"
-                        + "http://89.158.234.155:8081/soundBoard");
+                        + "http://" + MY_IP + ":8081/soundBoard");
                 setTimeout(() => {
                     message.channel.send("Now fuck off you piece of shit, learn to save an url in your fucking brower's bookmark.");
                 }, 3000);
@@ -172,7 +176,7 @@ function onMessage( message ) {
         } else if ( args[1] === "tg" ) {
             let correct = voiceChannelHandler.stopSound();
             if ( !correct )
-                message.channel.send("Oh my god shut the fuck up I wasn't playing any sound.\n"
+                message.channel.send("Oh my god shut the fuck up, I wasn't playing any sound.\n"
                         + "I'm tired of you all and your useless organic brains !");
         } else if ( args[1] === "truth" ) {
             if ( message.channel.name && message.channel.name !== "nsfw" ) {
@@ -188,6 +192,22 @@ function onMessage( message ) {
                 return;
             }
             truthOrDare.randomDare(message.channel);
+        } else if ( args[1] === "remote" ) {
+            message.channel.send("Here is the link to access to the remote control lovely human friend ♥~ :\n"
+                    + "http://" + MY_IP + ":8081/remote");
+            setTimeout(() => {
+                message.channel.send("Now fuck off you piece of shit, learn to save an url in your fucking brower's bookmark.");
+            }, 3000);
+        } else if ( args[1] === "dicedare" ) {
+            if ( message.channel.name && message.channel.name !== "nsfw" ) {
+                message.channel.send("Hi, you tried to compute a NSFW (Not Safe For Work) command on a SFW channel you dickhead.\n"
+                        + "Please retry on the NSFW channel you fuck.");
+                return;
+            }
+            if ( args.length < 3 )
+                message.channel.send("This command need 1 argument. Use start to start, lol.");
+            else
+                diceDare.diceDareCommand( args[2], message.channel );
         } else {
             if ( args[1] !== "help" )
                 message.channel.send("I don't speak idiot you useless cunt.\n"

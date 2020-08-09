@@ -24,6 +24,7 @@ const connectTime = 2 * 60 * 1000; // = 2 mins in ms
 var connectCode;
 var sessionCode;
 var allowConnection = false;
+var botUser;
 
 var delayedIps = [];
 
@@ -184,6 +185,9 @@ function initRemote(app) {
 
     app.get("/remote/disableRemote", function (req, res) {
         allowConnection = false;
+        if (botUser)
+            botUser.setActivity(null);
+
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.end("OK");
         clean();
@@ -192,6 +196,9 @@ function initRemote(app) {
     app.get("/remote/enableRemote", function (req, res) {
         if ( req.ip.includes("127.0.0.1") ) {
             allowConnection = true;
+            if (botUser)
+                botUser.setActivity("Remote control", {type: "LISTENING"});
+
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.end("OK");
             clean();
@@ -266,5 +273,10 @@ function clean() {
     sessionCode = undefined;
 }
 
+function registerBotUser(user) {
+    botUser = user;
+}
+
 exports.initRemote = initRemote;
 exports.clean = clean;
+exports.registerBotUser = registerBotUser;

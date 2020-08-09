@@ -1,4 +1,5 @@
 const HTTPClient = require("./HTTPClient");
+const channels = require("./channels");
 
 const maxSize = 2 * 1024 * 1024; // 2 Mo
 
@@ -55,7 +56,7 @@ function randomBestOfE621( chatChannel, tags ) {
     let options = {
         host: "e621.net",
         port: 443,
-        path: "/posts.json?page=1&limit=50&tags=order:score+-type:swf+-type:webm",
+        path: "/posts.json?page=1&limit=20&tags=order:score+-type:swf+-type:webm",
         method: "GET",
         headers: {
             "User-Agent": "MacBot/1.0 (by Yoyorony)"
@@ -77,7 +78,7 @@ function randomWorstOfE621( chatChannel, tags ) {
     let options = {
         host: "e621.net",
         port: 443,
-        path: "/posts.json?page=1&limit=50&tags=order:score_asc+-type:swf+-type:webm",
+        path: "/posts.json?page=1&limit=20&tags=order:score_asc+-type:swf+-type:webm",
         method: "GET",
         headers: {
             "User-Agent": "MacBot/1.0 (by Yoyorony)"
@@ -119,7 +120,7 @@ function onResultBestOf( resultCode, json, objects ) {
             else if ( randomPost.file.ext === "swf" )
                 objects.chatChannel.send("This is flash content click here to play it : https://e621.net/posts/" + randomPost.id );
             else if ( parseInt(randomPost.file.size) > maxSize )
-                objects.chatChannel.send("File size is too large only a preview is shown. Post id : " + randomPost.id,
+                objects.chatChannel.send("File size is too large, only a preview is shown. Post id : " + randomPost.id,
                         {files: [randomPost.sample.url]} );
             else 
                 objects.chatChannel.send( "Post id : " + randomPost.id,
@@ -134,6 +135,18 @@ function onError( objects, json, err ) {
             + "Looks like we got the dumbest person alive here !");
 }
 
+function handleReaction( message ) {
+    // is it an e621 message ?
+    let messageStr = message.toString();
+    if ( messageStr.includes("Post id :") || messageStr.includes("https://e621.net/posts/") ) {
+        let nsfwChannel = channels.getNSFWChannel();
+        if ( nsfwChannel ) {
+            nsfwChannel.send("Someone is masturbating to this shit (reacted my private message with '❤️') :\n" + messageStr, message.attachments.array());
+        }
+    }
+}
+
 exports.randomE621 = randomE621;
 exports.randomBestOfE621 = randomBestOfE621;
 exports.randomWorstOfE621 = randomWorstOfE621;
+exports.handleReaction = handleReaction;
