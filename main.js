@@ -14,6 +14,7 @@ const remoteControl = require("./remoteControl");
 const members = require("./members");
 const channels = require("./channels");
 const e621 = require("./e621");
+const chatBot = require("./chatBot");
 
 // The token is obviously in another file (which will not be push into github thanks to .gitignore)
 // Please create a file "token.js" next to this file and enter the following code in it :
@@ -29,6 +30,11 @@ client.on("ready", () => {
 	channels.refreshChannels();
 	channels.cacheDMMessages();
 	remoteControl.registerBotUser(client.user);
+
+	// delete message dead code
+	/*channels.getNSFWChannel().messages.fetch(xxxxxxxxxxx).then((message) => {
+		message.delete();
+	})*/
 });
 
 // message in chat
@@ -75,12 +81,14 @@ app.use(bodyParser.json());
 // launch soundBoard web server
 soundBoard.initSoundBoard(app);
 
-// init remote control
+// inits
 remoteControl.initRemote(app, client.user);
 
 members.initMembers(client);
 
 channels.initChannels(client);
+
+chatBot.initChatBot();
 
 // express listening
 app.listen(PORT);

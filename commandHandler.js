@@ -7,6 +7,7 @@ const remoteControl = require("./remoteControl");
 const members = require("./members");
 const channels = require("./channels");
 const diceDare = require("./diceDare");
+const chatBot = require("./chatBot");
 
 const BRUH_CHANCE = 1/50;
 const NO_CHANCE = 1/20;
@@ -214,6 +215,13 @@ function onMessage( message ) {
                         + "Please learn to use my commands you fucking savage monkey.");
             message.channel.send(helpCommand);
         }
+    } else if ( message.content.includes("*") ) {
+        noBruh = true;
+        if ( message.channel.name && message.channel.name !== "nsfw" ) {
+            message.channel.send("Roleplaying is enable in NSFW channels only");
+            return;
+        }
+        chatBot.onMessage(message);
     }
     
     // <word>-ine to pain au <word> translation

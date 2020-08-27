@@ -4,6 +4,9 @@ const channels = require("./channels");
 const maxSize = 2 * 1024 * 1024; // 2 Mo
 
 function randomE621( chatChannel, tags ) {
+    if ( checkLMC(chatChannel, tags) )
+        return;
+        
     let options = {
         host: "e621.net",
         port: 443,
@@ -53,6 +56,9 @@ function onResult( resultCode, json, objects ) {
 }
 
 function randomBestOfE621( chatChannel, tags ) {
+    if ( checkLMC(chatChannel, tags) )
+        return;
+
     let options = {
         host: "e621.net",
         port: 443,
@@ -75,6 +81,9 @@ function randomBestOfE621( chatChannel, tags ) {
 }
 
 function randomWorstOfE621( chatChannel, tags ) {
+    if ( checkLMC(chatChannel, tags) )
+        return;
+
     let options = {
         host: "e621.net",
         port: 443,
@@ -94,6 +103,13 @@ function randomWorstOfE621( chatChannel, tags ) {
     };
 
     HTTPClient.requestJSON(options, objects, onResultBestOf, onError);
+}
+
+function checkLMC( chatChannel, tags ) {
+    if ( !tags || !tags.toLowerCase().includes("les_mac_copains") )
+        return false;
+    chatChannel.send( "Post id : 2364054", {files: ["./tmp/YoyoronyMCnsfw.png"]} );
+    return true;
 }
 
 function onResultBestOf( resultCode, json, objects ) {
