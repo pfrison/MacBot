@@ -41,7 +41,29 @@ function requestText( options, objects, onResult, onError ) {
     req.end();
 }
 
+function requestRedirect( options, objects, onResult, onError ) {
+    const port = options.port == 443 ? https : http;
+    
+    const req = port.request(options, (res) => {
+        res.setEncoding('utf8');
+    
+        res.on('data', () => {});
+    
+        res.on('end', () => {
+            onResult(res.statusCode, res.headers.location, objects);
+        });
+    });
+    
+    req.on('error', (err) => { onError(objects, err); });
+
+    if ( options.method === "POST" && options.body )
+        req.write(options.body);
+    
+    req.end();
+}
+
 
 exports.requestJSON = requestJSON;
 exports.requestXML = requestXML;
 exports.requestText = requestText;
+exports.requestRedirect = requestRedirect;

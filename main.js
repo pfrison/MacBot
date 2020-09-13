@@ -40,7 +40,7 @@ client.on("ready", () => {
 // message in chat
 client.on("message", (message) => {
 	channels.cacheDMMessages();
-	commandHandler.onMessage(message);
+	commandHandler.onMessage( client, message );
 });
 
 // Detect when a member speaking status change (talking / not talking)
