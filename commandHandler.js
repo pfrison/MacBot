@@ -252,6 +252,24 @@ function onMessage( client, message ) {
             noBruh = true;
         }
     }
+
+    // je suis *** -> bonjour ***, je suis macpop
+    for (let i=0; i<args.length - 2; i++) {
+        if ( args[i] === "je" && args[i+1] === "suis" ) {
+            let toSend = "Bonjour";
+            for (let j=i+2; j<args.length; j++) {
+                if ( args[j].includes(".") || args[j].includes(",") || args[j].includes("!") || args[j].includes("?") || args[j].includes(";") || args[j].includes(":") ) {
+                    let word = args[j].replace(/[\.,!\?;:]*/g, "");
+                    if ( word )
+                    toSend += " " + word;
+                    break;
+                } else
+                toSend += " " + args[j];
+            }
+            toSend += ", je suis " + client.user.username + " =D";
+            message.channel.send(toSend);
+        }
+    }
     
     // chance to say "bruh"
     if ( !noBruh && Math.random() < BRUH_CHANCE )

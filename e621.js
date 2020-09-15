@@ -42,18 +42,7 @@ function onResult( resultCode, json, objects ) {
             return;
         }
 
-        try {
-            if ( !json.post.sample.url || !json.post.file.url )
-                objects.chatChannel.send("Couldn't get the direct url. Here is a link to the post : https://e621.net/posts/" + json.post.id);
-            else if ( json.post.file.ext === "swf" )
-                objects.chatChannel.send("This is flash content click here to play it : https://e621.net/posts/" + json.post.id );
-            else if ( parseInt(json.post.file.size) > maxSize )
-                objects.chatChannel.send("File size is too large only a preview is shown. Post id : " + json.post.id,
-                        {files: [json.post.sample.url]} );
-            else 
-                objects.chatChannel.send( "Post id : " + json.post.id,
-                        {files: [json.post.file.url]} );
-        } catch(err) { onError( objects, json, err ); }
+        displayPost( onResult, json.post, objects );
     }
 }
 
@@ -125,18 +114,7 @@ function onResultBestOf( resultCode, json, objects ) {
             return;
         }
 
-        try {
-            if ( !randomPost.sample.url || !randomPost.file.url )
-                objects.chatChannel.send("Couldn't get the direct url. Here is a link to the post : https://e621.net/posts/" + randomPost.id);
-            else if ( randomPost.file.ext === "swf" )
-                objects.chatChannel.send("This is flash content click here to play it : https://e621.net/posts/" + randomPost.id );
-            else if ( parseInt(randomPost.file.size) > maxSize )
-                objects.chatChannel.send("File size is too large, only a preview is shown. Post id : " + randomPost.id,
-                        {files: [randomPost.sample.url]} );
-            else 
-                objects.chatChannel.send( "Post id : " + randomPost.id,
-                        {files: [randomPost.file.url]} );
-        } catch(err) { onError( objects, json, err ); }
+        displayPost( onResultBestOf, randomPost, objects );
     }
 }
 
@@ -155,7 +133,7 @@ function randomTag( chatChannel, tag ) {
     };
 
     if ( !tag ) {
-        options.path = "/tags?search%5Bhas_wiki%5D=yes&search%5Bcategory%5D=0";
+        options.path = "/tags?search%5Bhas_wiki%5D=yes";
         HTTPClient.requestText(options, objects, onResultTagSize, onError);
     } else {
         options.path = "/wiki_pages/show_or_new?title=" + tag;
@@ -183,7 +161,7 @@ function onResultTagSize( resultCode, html, objects ) {
         let options = {
             host: "e621.net",
             port: 443,
-            path: "/tags.json?page=" + randomPage + "&search%5Bhas_wiki%5D=yes&search%5Bcategory%5D=0",
+            path: "/tags.json?page=" + randomPage + "&search%5Bhas_wiki%5D=yes",
             method: "GET",
             headers: {
                 "User-Agent": "MacBot/1.0 (by Yoyorony)"
@@ -242,6 +220,20 @@ function onResultTagWiki( resultCode, url, objects ) {
     }
 }
 
+const categories = [
+    "General: ",
+    "Artist: ",
+    "",
+    "Copyright: ",
+    "Character: ",
+    "Species: ",
+    "Invalid: ",
+    "Meta: ",
+    "Lore: ",
+    "",
+    ""
+];
+
 function onResultTag( resultCode, json, objects ) {
     if ( resultCode === 404 )
         objects.chatChannel.send("You have so much disgusting tastes, it returned no result...\n"
@@ -256,33 +248,51 @@ function onResultTag( resultCode, json, objects ) {
 
         let tag = json.title;
 
-        json.body = json.body.split("[[").join("");
-        json.body = json.body.split("]]").join("");
+        json.body = json.body.replace(/\[section.*?\]/g, "");
+        json.body = json.body.replace(/\[\/section\]/g, "");
+
         json.body = json.body.split("\r").join("");
         json.body = json.body.split("*").join("  ");
-        json.body = json.body.split("\n").join("\n> ");
+
         json.body = json.body.split("[b]").join("**");
         json.body = json.body.split("[/b]").join("**");
         json.body = json.body.split("[i]").join("*");
         json.body = json.body.split("[/i]").join("*");
-        json.body = json.body.split("[u]").join("**");
-        json.body = json.body.split("[/u]").join("**");
-        json.body = "> " + json.body;
+        json.body = json.body.split("[u]").join("__");
+        json.body = json.body.split("[/u]").join("__");
 
-        json.title = "**" + json.title.charAt(0).toUpperCase() + json.title.slice(1) + "**";
+        json.body = json.body.split("[B]").join("**");
+        json.body = json.body.split("[/B]").join("**");
+        json.body = json.body.split("[I]").join("*");
+        json.body = json.body.split("[/I]").join("*");
+        json.body = json.body.split("[U]").join("__");
+        json.body = json.body.split("[/U]").join("__");
 
-        if ( json.body.length > 1500 ) {
-            objects.chatChannel.send( json.title );
-            for (let i = 0; i < Math.ceil(json.body.length / 1500); i++) {
-                objects.chatChannel.send( "> " + json.body.substring(i * 1500, (i+1) * 1500) ).then((message) => {
-                    message.suppressEmbeds(true);
-                });
+        json.body = json.body.replace(/h[0-9]\.[ ]*?(.*?)\n/g, "> **$1**\n");
+
+        json.body = json.body.replace(/thumb #[0-9]*/g, "");
+
+        json.body = json.body.replace(/\[\[([^\[\]]*?) ([^\[\]]*?)\]\]/g, "[[$1_$2]]");
+        json.body = json.body.replace(/\[\[([^\[\]]*?)\|([^\[\]]*?)\]\]/g, "[$2](https://e621.net/wiki_pages/show_or_new?title=$1)");
+        json.body = json.body.replace(/\[\[([^\|]*?)\]\]/g, "[$1](https://e621.net/wiki_pages/show_or_new?title=$1)");
+
+        json.body = json.body.replace(/\n\s*\n/g, "\n\n");
+
+        if ( json.body.length > 2000 )
+            json.body = json.body.substring(0, 1500) + "...";
+        json.body = json.body + "\n\nExample :";
+
+        objects.embed = {
+            title: categories[json.category_name] + json.title,
+            description: json.body,
+            url: "https://e621.net/wiki_pages/" + json.id,
+            color: Math.floor(Math.random() * 16777215),
+            timestamp: json.updated_at,
+            footer: {
+                icon_url: "https://e621.net/favicon.ico",
+                text: "by MacPop using e621.net"
             }
-        } else {
-            objects.chatChannel.send(json.title + "\n" + json.body).then((message) => {
-                message.suppressEmbeds(true);
-            });
-        }
+        };
         
         // example
         let options = {
@@ -300,27 +310,53 @@ function onResultTag( resultCode, json, objects ) {
 }
 
 function onResultExample( resultCode, json, objects ) {
-    if ( resultCode !== 200)
-        objects.chatChannel.send("Cannot fetch an example for this tag.");
-    else {
-        if ( !json || !json.post.id || !json.post.file.size || !json.post.file.ext ) {
-            objects.chatChannel.send("Cannot fetch an example for this tag.");
-            return;
-        }
-
+    let imageUrl = undefined;
+    let imageId = undefined;
+    if ( resultCode === 200 && json && json.post.id && json.post.file.size && json.post.file.ext ) {
         try {
-            if ( !json.post.sample.url || !json.post.file.url )
-                objects.chatChannel.send("Example :\nCouldn't get the direct url. Here is a link to the post : https://e621.net/posts/" + json.post.id);
-            else if ( json.post.file.ext === "swf" )
-                objects.chatChannel.send("Example :\nThis is flash content click here to play it : https://e621.net/posts/" + json.post.id );
+            if ( !json.post.sample.url || !json.post.file.url ) {
+                if ( !objects.retried ) {
+                    objects.retried = true;
+                    HTTPClient.requestJSON(options, objects, onResultExample, onError);
+                    return;
+                }
+            }
             else if ( parseInt(json.post.file.size) > maxSize )
-                objects.chatChannel.send("Example :\nFile size is too large only a preview is shown. Post id : " + json.post.id,
-                        {files: [json.post.sample.url]} );
-            else 
-                objects.chatChannel.send( "Example :\nPost id : " + json.post.id,
-                        {files: [json.post.file.url]} );
-        } catch(err) { objects.chatChannel.send("Cannot fetch an example for this tag."); }
+                imageUrl = json.post.sample.url;
+            else
+                imageUrl = json.post.file.url;
+            imageId = json.post.id;
+        } catch(err) { }
     }
+
+    if ( imageUrl ) {
+        objects.embed.description += " (ID " + imageId + ")";
+        objects.embed.image = {
+            url: imageUrl
+        };
+    } else
+        objects.embed.description += " (cannot fetch an example)."
+    
+    objects.chatChannel.send({embed: objects.embed});
+}
+
+function displayPost( masterFunction, post, objects, prefix = "" ) {
+    try {
+        if ( !post.sample.url || !post.file.url ) {
+            if ( !objects.retried ) {
+                objects.retried = true;
+                HTTPClient.requestJSON(options, objects, masterFunction, onError);
+            } else
+                objects.chatChannel.send("Couldn't get the direct url. Here is a link to the post : https://e621.net/posts/" + post.id);
+        } else if ( post.file.ext === "swf" )
+            objects.chatChannel.send("This is flash content click here to play it : https://e621.net/posts/" + post.id );
+        else if ( parseInt(post.file.size) > maxSize )
+            objects.chatChannel.send("File size is too large only a preview is shown. Post id : " + post.id,
+                    {files: [post.sample.url]} );
+        else 
+            objects.chatChannel.send( "Post id : " + post.id,
+                    {files: [post.file.url]} );
+    } catch(err) { objects.chatChannel.send("Cannot fetch the post."); }
 }
 
 function onError( objects, json, err ) {
